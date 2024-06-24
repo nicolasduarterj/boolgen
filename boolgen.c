@@ -23,12 +23,18 @@ print_truth_table (char *expression)
   for (int i = 1; i < pow (2.0, (double)vc); i++)
     {
       printf ("| ");
+      // Alterna cada casa para formar as permutações de 5 booleans
       values[0] = i % 16 == 0 ? !values[0] : values[0];
       values[1] = i % 8 == 0 ? !values[1] : values[1];
       values[2] = i % 4 == 0 ? !values[2] : values[2];
       values[3] = i % 2 == 0 ? !values[3] : values[3];
       values[4] = !values[4];
       bool tempvalues2[] = { false, false, false, false, false };
+      /* Como f requer que a array esteja na ordem, transferimos os booleans
+       desejados a uma array secundária em ordem. Por exemplo, com duas
+       variáveis, nós só queremos as últimas duas casas de cada permutação como
+       a e b
+       */
       for (int j = 5 - vc, k = 0; j < 5; j++, k++)
         {
           printf ("%d ", values[j]);
@@ -58,6 +64,7 @@ main (int argc, char *argv[])
   strcpy (filteredsyntax, argv[1]);
   while (strchr (filteredsyntax, 'x') != NULL)
     filteredsyntax = xorfilter (filteredsyntax);
+  printf ("%s\n", filteredsyntax);
   print_truth_table (filteredsyntax);
   return 0;
 }

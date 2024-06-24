@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 char *xorfilter (char *syntax);
-int distance_to_end_of_block (char syntax[], int start_index);
+int n_of_chars_inbetween_parentheses (char *entrypoint, char direction);
 bool f (char syntax[], bool values[]);
 int varcount (char syntax[]);
 
