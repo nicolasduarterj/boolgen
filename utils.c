@@ -7,8 +7,8 @@
 bool
 f (char syntax[], bool values[])
 {
-  bool sum_acc = false;    // Elemento identidade do monóide (Bool, ||)
-  bool product_acc = true; // Elemento identidade do monóide (Bool, &&)
+  bool sum_acc = false;    // Identity element of the monoid (Bool, ||)
+  bool product_acc = true; // Identity element of the monoid (Bool, &&)
   bool not = false;
   for (int i = 0; i < strlen (syntax); i++)
     {
@@ -17,13 +17,13 @@ f (char syntax[], bool values[])
       else if (syntax[i] == '+')
         {
           sum_acc = sum_acc || product_acc;
-          product_acc = true; // Reverte ao elemento identidade
+          product_acc = true; // Reverts to the identity element
         }
       else if (syntax[i] == '(')
         {
           int size = n_of_chars_inbetween_parentheses (syntax + i, 'r');
           char *subsyntax = calloc (strlen (syntax), sizeof (char));
-          // Copia o que está entre os parênteses
+          // Copies the content in between parentheses
           strncpy (subsyntax, syntax + i + 1, size);
           bool result = f (subsyntax, values);
           if (not )
@@ -76,7 +76,7 @@ xorfilter (char *syntax)
       b[size] = '\0';
       strncpy (b, pointertox + 2, size);
       printf ("Size:%d b:%s\n", size, b);
-      // pointer to the last char before the closing parenthes of b
+      // pointer to the last char before the closing parentheses of b
       endofb = pointertox + 1 + size;
     }
 
