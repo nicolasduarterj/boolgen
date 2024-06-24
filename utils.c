@@ -10,21 +10,21 @@ f (char syntax[], bool values[])
   bool sum_acc = false;    // Identity element of the monoid (Bool, ||)
   bool product_acc = true; // Identity element of the monoid (Bool, &&)
   bool not = false;
-  for (int i = 0; i < strlen (syntax); i++)
+  for (char *i = syntax; i != syntax + strlen (syntax) + 1; i++)
     {
-      if (syntax[i] >= 'A' && syntax[i] <= 'E')
-        product_acc = product_acc && values[syntax[i] - 'A'];
-      else if (syntax[i] == '+')
+      if (*i >= 'A' && *i <= 'E')
+        product_acc = product_acc && values[*i - 'A'];
+      else if (*i == '+')
         {
           sum_acc = sum_acc || product_acc;
           product_acc = true; // Reverts to the identity element
         }
-      else if (syntax[i] == '(')
+      else if (*i == '(')
         {
-          int size = n_of_chars_inbetween_parentheses (syntax + i, 'r');
+          int size = n_of_chars_inbetween_parentheses (i, 'r');
           char *subsyntax = calloc (strlen (syntax), sizeof (char));
           // Copies the content in between parentheses
-          strncpy (subsyntax, syntax + i + 1, size);
+          strncpy (subsyntax, i + 1, size);
           bool result = f (subsyntax, values);
           if (not )
             result = !result;
@@ -32,7 +32,7 @@ f (char syntax[], bool values[])
           i = i + 1 + size;
           not = false;
         }
-      else if (syntax[i] == '!')
+      else if (*i == '!')
         not = true;
     }
   sum_acc = sum_acc || product_acc;
