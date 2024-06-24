@@ -9,7 +9,7 @@ bool f(char syntax[], bool values[])
 {
     bool sum_acc = false;    // Identity element of the monoid (Bool, ||)
     bool product_acc = true; // Identity element of the monoid (Bool, &&)
-    bool not = false;
+    bool notflag = false;
     for (char *i = syntax; i != syntax + strlen(syntax) + 1; i++)
     {
         if (*i >= 'A' && *i <= 'E')
@@ -26,14 +26,15 @@ bool f(char syntax[], bool values[])
             // Copies the content in between parentheses
             strncpy(subsyntax, i + 1, size);
             bool result = f(subsyntax, values);
-            if (not )
+            if (notflag)
                 result = !result;
             product_acc = product_acc && result;
             i = i + 1 + size;
-            not = false;
+            notflag = false;
+            free(subsyntax);
         }
         else if (*i == '!')
-            not = true;
+            notflag = true;
     }
     sum_acc = sum_acc || product_acc;
     return sum_acc;
@@ -41,13 +42,15 @@ bool f(char syntax[], bool values[])
 
 char *xorfilter(char *syntax)
 {
-    char *pointertox = strchr(syntax, 'x');
-    char copy[strlen(syntax)];
     char a[strlen(syntax)];
     char b[strlen(syntax)];
+    char *pointertox = strchr(syntax, 'x');
+    char *newstring = calloc(256, sizeof(char));
     char *begginingofa = NULL;
     char *endofb = NULL;
-    strncpy(copy, syntax, strlen(syntax));
+    char *wheretowrite;
+    int diff;
+
     if (*(pointertox - 1) >= 'A' && *(pointertox - 1) <= 'E')
     {
         begginingofa = pointertox - 1;
@@ -57,11 +60,10 @@ char *xorfilter(char *syntax)
     else if (*(pointertox - 1) == ')')
     {
         int size = n_of_chars_inbetween_parentheses(pointertox - 1, 'l');
-        // pointer to the first char after the opening parentheses of a
-        begginingofa = pointertox - 1 - size;
-        strncpy(a, begginingofa, size);
+        // * pointer to the opening parentheses of a
+        begginingofa = pointertox - 1 - size - 1;
+        strncpy(a, begginingofa + 1, size);
         a[size] = '\0';
-        printf("%s\n", a);
     }
     if (*(pointertox + 1) >= 'A' && *(pointertox + 1) <= 'E')
     {
@@ -72,25 +74,18 @@ char *xorfilter(char *syntax)
     else if (*(pointertox + 1) == '(')
     {
         int size = n_of_chars_inbetween_parentheses(pointertox + 1, 'r');
-        b[size] = '\0';
+        // * pointer to the closing parentheses of b
+        endofb = pointertox + 1 + size + 1;
         strncpy(b, pointertox + 2, size);
-        printf("Size:%d b:%s\n", size, b);
-        // pointer to the last char before the closing parentheses of b
-        endofb = pointertox + 1 + size;
+        b[size] = '\0';
     }
 
-    char *newstring = calloc(strlen(syntax) * 3, sizeof(char));
-    strncpy(newstring, syntax, begginingofa - 1 - syntax);
-    strcat(newstring, "((");
-    strcat(newstring, a);
-    strcat(newstring, ")!(");
-    strcat(newstring, b);
-    strcat(newstring, ")+!(");
-    strcat(newstring, a);
-    strcat(newstring, ")(");
-    strcat(newstring, b);
-    strcat(newstring, "))");
-    strcat(newstring, endofb + 2);
+    diff = begginingofa - syntax;
+    // Copy string until the point in which we will substitute a
+    strncpy(newstring, syntax, diff);
+    wheretowrite = newstring + diff;
+    snprintf(wheretowrite, (255 - diff), "((%s)!(%s)+!(%s)(%s))", a, b, a, b);
+    strcat(newstring, endofb + 1);
     return newstring;
 }
 
@@ -102,6 +97,7 @@ int n_of_chars_inbetween_parentheses(char *entrypoint, char direction)
     char *end = NULL;
     int counter = 0;
     char *current = direction == 'r' ? entrypoint + 1 : entrypoint - 1;
+
     while (parentheses_count != 0)
     {
         if (*current == signtoincrease)
@@ -111,6 +107,7 @@ int n_of_chars_inbetween_parentheses(char *entrypoint, char direction)
         counter++;
         current = direction == 'r' ? current + 1 : current - 1;
     }
+
     return counter - 1;
 }
 
@@ -118,6 +115,7 @@ int varcount(char syntax[])
 {
     long acc = 1;
     int counter = 0;
+
     for (int i = 0; i < strlen(syntax); i++)
     {
         if (syntax[i] >= 'A' && syntax[i] <= 'E' && acc % syntax[i] != 0)
@@ -126,5 +124,6 @@ int varcount(char syntax[])
             counter++;
         }
     }
+
     return counter;
 }
