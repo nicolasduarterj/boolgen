@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "boolgen_utils.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -84,8 +84,7 @@ char *xorfilter(char *syntax)
     // Copy string until the point in which we will substitute a
     strncpy(newstring, syntax, diff);
     wheretowrite = newstring + diff;
-    snprintf(wheretowrite, (255 - diff), "((%s)!(%s)+!(%s)(%s))", a, b, a, b);
-    strcat(newstring, endofb + 1);
+    snprintf(wheretowrite, (255 - diff), "((%s)!(%s)+!(%s)(%s))%s", a, b, a, b, endofb + 1);
     return newstring;
 }
 

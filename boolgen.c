@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "boolgen.h"
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -42,6 +42,19 @@ void print_truth_table(char *expression)
         }
         printf("| %d |\n", f(expression, tmpvalues));
     }
+}
+
+bool apply_expression(char syntax[], bool values[])
+{
+    char *filteredsyntax = calloc(strlen(syntax), sizeof(char));
+    strcpy(filteredsyntax, syntax);
+    while (strchr(filteredsyntax, 'x') != NULL)
+    {
+        char *oldsyntax = filteredsyntax;
+        filteredsyntax = xorfilter(oldsyntax);
+        free(oldsyntax);
+    }
+    return f(filteredsyntax, values);
 }
 
 int main(int argc, char *argv[])
